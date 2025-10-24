@@ -1,3 +1,14 @@
+TODO:  
+- [ ] Update README
+- [x] Generate card back
+- [x] Generate card front background
+- [x] Generate card: Marshmallow
+- [x] Generate card: Rabbit
+- [x] Generate card: Sleep mask
+- [x] Generate card: Knife
+- [x] Generate card: Cake
+- [x] Generate card: Barrette
+
 # Memory Card Game
 
 This is a simple memory card game. The goal is to match all the cards in the fewest number of moves.
