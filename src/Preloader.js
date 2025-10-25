@@ -18,7 +18,7 @@ export class Preloader extends Phaser.Scene {
     this.load.image("volume-icon-on", "ui/volume-icon-on.png");
     this.load.image("volume-icon-off", "ui/volume-icon-off.png");
 
-    this.load.audio("theme-song", "audio/fat-caps-audionatix.mp3");
+    this.load.audio("theme-song", "audio/theme-song.mp3");
     this.load.audio("whoosh", "audio/whoosh.mp3");
     this.load.audio("card-flip", "audio/card-flip.mp3");
     this.load.audio("card-match", "audio/card-match.mp3");

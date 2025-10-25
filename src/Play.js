@@ -13,10 +13,6 @@ const DEBUG_MODE = false;
  * Test your memory skills in this classic game of matching pairs.
  * Flip over cards to reveal pictures, and try to remember where each image is located.
  * Match all the pairs to win!
- *
- * Music credits:
- * "Fat Caps" by Audionautix is licensed under the Creative Commons Attribution 4.0 license. https://creativecommons.org/licenses/by/4.0/
- * Artist http://audionautix.com/
  */
 export class Play extends Phaser.Scene {
   // All cards names

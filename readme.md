@@ -21,9 +21,9 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
   - `card-slide.mp3` taken from: Eiravaein Works - Vaeyan II (2015)
   - `victory.mp3` taken from: Soundrangers - Audience Reactions (2018)
   - `whoosh.mp3` taken from: Matias Vidal Saavedra - Animated Explainer Video (2020)
+- Theme song: ["Pickled Pink" by Kevin MacLeod](https://freepd.com/upbeat.php)
 
 ## TODO
 
-- [ ] Update (and rename) theme song: fat-caps-audionatix.mp3
 - [ ] Optimize images
 - [ ] Update comment in `Play.js`
