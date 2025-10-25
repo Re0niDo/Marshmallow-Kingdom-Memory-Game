@@ -1,5 +1,6 @@
 import { createCard } from './createCard';
 import Phaser from 'phaser';
+import { COLORS } from './colors';
 
 /**
  * Card Memory Game by Francisco Pereira (Gammafp)
@@ -59,7 +60,7 @@ export class Play extends Phaser.Scene
 
         const titleText = this.add.text(this.sys.game.scale.width / 2, this.sys.game.scale.height / 2,
             "Marshmallow Kingdom\nMemory Game\nClick to Play",
-            { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: "#8c7ae6" }
+            { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: COLORS.TITLE_TEXT }
         )
             .setOrigin(.5)
             .setDepth(3)
@@ -76,11 +77,11 @@ export class Play extends Phaser.Scene
 
         // Text Events
         titleText.on(Phaser.Input.Events.POINTER_OVER, () => {
-            titleText.setColor("#9c88ff");
+            titleText.setColor(COLORS.TITLE_TEXT_HOVER);
             this.input.setDefaultCursor("pointer");
         });
         titleText.on(Phaser.Input.Events.POINTER_OUT, () => {
-            titleText.setColor("#8c7ae6");
+            titleText.setColor(COLORS.TITLE_TEXT);
             this.input.setDefaultCursor("default");
         });
         titleText.on(Phaser.Input.Events.POINTER_DOWN, () => {
@@ -169,7 +170,7 @@ export class Play extends Phaser.Scene
 
     volumeButton ()
     {
-        const volumeIcon = this.add.image(532, 350, "volume-icon").setName("volume-icon").setDepth(1);
+        const volumeIcon = this.add.image(532, 350, "volume-icon-on").setName("volume-icon").setDepth(1);
         volumeIcon.setInteractive();
 
         // Mouse enter
@@ -186,11 +187,11 @@ export class Play extends Phaser.Scene
         volumeIcon.on(Phaser.Input.Events.POINTER_DOWN, () => {
             if (this.sound.volume === 0) {
                 this.sound.setVolume(1);
-                volumeIcon.setTexture("volume-icon");
+                volumeIcon.setTexture("volume-icon-on");
                 volumeIcon.setAlpha(1);
             } else {
                 this.sound.setVolume(0);
-                volumeIcon.setTexture("volume-icon_off");
+                volumeIcon.setTexture("volume-icon-off");
                 volumeIcon.setAlpha(.5)
             }
         });
@@ -201,14 +202,14 @@ export class Play extends Phaser.Scene
 
         // WinnerText and GameOverText
         const winnerText = this.add.text(this.sys.game.scale.width / 2, -1000, "YOU WIN",
-            { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: "#8c7ae6" }
+            { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: COLORS.WINNER_TEXT }
         ).setOrigin(.5)
             .setDepth(3)
             .setInteractive();
 
         const gameOverText = this.add.text(this.sys.game.scale.width / 2, -1000,
             "GAME OVER\nClick to restart",
-            { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: "#ff0000" }
+            { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: COLORS.GAME_OVER_TEXT }
         )
             .setName("gameOverText")
             .setDepth(3)
@@ -237,7 +238,7 @@ export class Play extends Phaser.Scene
                     this.input.setDefaultCursor("pointer");
                 } else {
                     if(go[0]) {
-                        if(go[0].name !== "volume-icon") {
+                        if(go[0].name !== "volume-icon-on") {
                             this.input.setDefaultCursor("pointer");
                         }
                     } else {
@@ -343,11 +344,11 @@ export class Play extends Phaser.Scene
 
         // Text events
         winnerText.on(Phaser.Input.Events.POINTER_OVER, () => {
-            winnerText.setColor("#FF7F50");
+            winnerText.setColor(COLORS.WINNER_TEXT_HOVER);
             this.input.setDefaultCursor("pointer");
         });
         winnerText.on(Phaser.Input.Events.POINTER_OUT, () => {
-            winnerText.setColor("#8c7ae6");
+            winnerText.setColor(COLORS.WINNER_TEXT);
             this.input.setDefaultCursor("default");
         });
         winnerText.on(Phaser.Input.Events.POINTER_DOWN, () => {
@@ -363,12 +364,12 @@ export class Play extends Phaser.Scene
         });
 
         gameOverText.on(Phaser.Input.Events.POINTER_OVER, () => {
-            gameOverText.setColor("#FF7F50");
+            gameOverText.setColor(COLORS.GAME_OVER_TEXT);
             this.input.setDefaultCursor("pointer");
         });
 
         gameOverText.on(Phaser.Input.Events.POINTER_OUT, () => {
-            gameOverText.setColor("#8c7ae6");
+            gameOverText.setColor(COLORS.GAME_OVER_TEXT_HOVER);
             this.input.setDefaultCursor("default");
         });
 

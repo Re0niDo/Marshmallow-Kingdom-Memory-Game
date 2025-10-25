@@ -1,6 +1,7 @@
 import { Preloader } from './Preloader';
 import { Play } from './Play';
 import Phaser from 'phaser';
+import { COLORS } from './colors';
 
 const config = {
     title: 'Marshmallow Kingdom Memory Game',
@@ -8,7 +9,7 @@ const config = {
     width: 549,
     height: 480,
     parent: 'game-container',
-    backgroundColor: '#8256BF',
+    backgroundColor: COLORS.BACKGROUND,
     pixelArt: true,
     scale: {
         mode: Phaser.Scale.FIT,
