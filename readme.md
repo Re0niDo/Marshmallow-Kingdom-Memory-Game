@@ -14,15 +14,16 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
 - Art generated with: [Adobe Firefly](https://firefly.adobe.com/generate/image)
 - Favicon and heart icon based on: [Board Game Icons by Kenney](https://kenney.nl/assets/board-game-icons)
 - Music on/off icons based on: [Game Icons by Kenney](https://kenney.nl/assets/game-icons)
+- All sound effects are from: [GameAudioGDC](https://sonniss.com/gameaudiogdc/)
+  - `card-flip.mp3` taken from: SmartSoundFX - User Interaction (2020)
+  - `card-match.mp3` taken from: The Chris Alan - Gliss Bliss (2019)
+  - `card-mismatch.mp3` taken from: Chris Logsdon - Ambient Puzzle SFX Pack (2019)
+  - `card-slide.mp3` taken from: Eiravaein Works - Vaeyan II (2015)
+  - `victory.mp3` taken from: Soundrangers - Audience Reactions (2018)
+  - `whoosh.mp3` taken from: Matias Vidal Saavedra - Animated Explainer Video (2020)
 
 ## TODO
 
-- [ ] Update sound: card-flip.mp3
-- [ ] Update sound: card-match.mp3
-- [ ] Update sound: card-mismatch.mp3
-- [ ] Update sound: card-slide.mp3
-- [ ] Update sound: fat-caps-audionatix.mp3
-- [ ] Update sound: victory.mp3
-- [ ] Update sound: whoosh.mp3
+- [ ] Update (and rename) theme song: fat-caps-audionatix.mp3
 - [ ] Optimize images
 - [ ] Update comment in `Play.js`
