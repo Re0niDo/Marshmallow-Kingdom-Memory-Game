@@ -3,7 +3,7 @@ import { Play } from './Play';
 import Phaser from 'phaser';
 
 const config = {
-    title: 'Card Memory Game',
+    title: 'Marshmallow Kingdom Memory Game',
     type: Phaser.AUTO,
     width: 549,
     height: 480,
