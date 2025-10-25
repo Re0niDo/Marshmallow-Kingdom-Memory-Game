@@ -17,4 +17,12 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
 
 ## TODO
 
-- [ ] Extract all colors to file
+- [ ] Fix "go" variable
+- [ ] Update sound: card-flip.mp3
+- [ ] Update sound: card-match.mp3
+- [ ] Update sound: card-mismatch.mp3
+- [ ] Update sound: card-slide.mp3
+- [ ] Update sound: fat-caps-audionatix.mp3
+- [ ] Update sound: victory.mp3
+- [ ] Update sound: whoosh.mp3
+- [ ] Optimize images
