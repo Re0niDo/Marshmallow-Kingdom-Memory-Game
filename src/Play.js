@@ -77,11 +77,8 @@ export class Play extends Phaser.Scene {
     });
     this.activeTweens = [];
 
-    // Stop theme song if playing
-    const themeSound = this.sound.get("theme-song");
-    if (themeSound) {
-      themeSound.stop();
-    }
+    // Note: theme-song is NOT stopped here - it persists across scene restarts
+    // This allows the music to continue playing when the game restarts
 
     // Reset cursor
     this.input.setDefaultCursor("default");
