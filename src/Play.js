@@ -41,6 +41,10 @@ export class Play extends Phaser.Scene {
     super({
       key: "Play",
     });
+    // Track resources for cleanup
+    this.activeTweens = [];
+    this.pointerMoveHandler = null;
+    this.pointerDownHandler = null;
   }
 
   init() {
@@ -50,7 +54,44 @@ export class Play extends Phaser.Scene {
     this.volumeButton();
   }
 
+  shutdown() {
+    // Remove input event listeners
+    if (this.pointerMoveHandler) {
+      this.input.off(Phaser.Input.Events.POINTER_MOVE, this.pointerMoveHandler);
+      this.pointerMoveHandler = null;
+    }
+    if (this.pointerDownHandler) {
+      this.input.off(Phaser.Input.Events.POINTER_DOWN, this.pointerDownHandler);
+      this.pointerDownHandler = null;
+    }
+
+    // Stop all active tweens
+    this.activeTweens.forEach((tween) => {
+      if (tween && !tween.isDestroyed()) {
+        tween.stop();
+      }
+    });
+    this.activeTweens = [];
+
+    // Stop theme song if playing
+    const themeSound = this.sound.get("theme-song");
+    if (themeSound) {
+      themeSound.stop();
+    }
+
+    // Reset cursor
+    this.input.setDefaultCursor("default");
+
+    // Remove shutdown listeners
+    this.events.off("shutdown", this.shutdown, this);
+    this.events.off("destroy", this.shutdown, this);
+  }
+
   create() {
+    // Register shutdown handlers for proper cleanup
+    this.events.once("shutdown", this.shutdown, this);
+    this.events.once("destroy", this.shutdown, this);
+
     // Background image
     this.add.image(0, 0, "background").setOrigin(0);
 
@@ -65,7 +106,7 @@ export class Play extends Phaser.Scene {
       .setDepth(3)
       .setInteractive();
     // title tween like retro arcade
-    this.add.tween({
+    const titleTween = this.add.tween({
       targets: titleText,
       duration: 800,
       ease: (value) => value > 0.8,
@@ -73,6 +114,7 @@ export class Play extends Phaser.Scene {
       repeat: -1,
       yoyo: true,
     });
+    this.activeTweens.push(titleTween);
 
     // Text Events
     titleText.on(Phaser.Input.Events.POINTER_OVER, () => {
@@ -85,7 +127,7 @@ export class Play extends Phaser.Scene {
     });
     titleText.on(Phaser.Input.Events.POINTER_DOWN, () => {
       this.sound.play("whoosh", { volume: 1.3 });
-      this.add.tween({
+      const startTween = this.add.tween({
         targets: titleText,
         ease: Phaser.Math.Easing.Bounce.InOut,
         y: -1000,
@@ -96,31 +138,20 @@ export class Play extends Phaser.Scene {
           this.startGame();
         },
       });
+      this.activeTweens.push(startTween);
     });
   }
 
   restartGame() {
     this.cardOpened = undefined;
+    this.canMove = false;
     this.cameras.main.fadeOut(200 * this.cards.length);
-    this.cards.reverse().map((card, index) => {
-      this.add.tween({
-        targets: card.gameObject,
-        duration: 500,
-        y: 1000,
-        delay: index * 100,
-        onComplete: () => {
-          card.gameObject.destroy();
-        },
-      });
-    });
 
+    // Let scene lifecycle handle cleanup
     this.time.addEvent({
       delay: 200 * this.cards.length,
       callback: () => {
-        this.cards = [];
-        this.canMove = false;
         this.scene.restart();
-        this.sound.play("card-slide", { volume: 1.2 });
       },
     });
   }
@@ -137,13 +168,14 @@ export class Play extends Phaser.Scene {
         frontTexture: name,
         cardName: name,
       });
-      this.add.tween({
+      const cardTween = this.add.tween({
         targets: newCard.gameObject,
         duration: 800,
         delay: index * 100,
         onStart: () => this.sound.play("card-slide", { volume: 1.2 }),
         y: this.gridConfiguration.y + (128 + this.gridConfiguration.paddingY) * Math.floor(index / 4),
       });
+      this.activeTweens.push(cardTween);
       return newCard;
     });
   }
@@ -152,13 +184,14 @@ export class Play extends Phaser.Scene {
     return Array.from(new Array(this.lives)).map((el, index) => {
       const heart = this.add.image(this.sys.game.scale.width + 1000, 20, "heart");
 
-      this.add.tween({
+      const heartTween = this.add.tween({
         targets: heart,
         ease: Phaser.Math.Easing.Expo.InOut,
         duration: 1000,
         delay: 1000 + index * 200,
         x: 140 + 30 * index, // marginLeft + spaceBetween * index
       });
+      this.activeTweens.push(heartTween);
       return heart;
     });
   }
@@ -230,26 +263,25 @@ export class Play extends Phaser.Scene {
       },
     });
 
-    // Game Logic
-    this.input.on(Phaser.Input.Events.POINTER_MOVE, (pointer) => {
-      if (this.canMove) {
-        const card = this.cards.find((card) => card.gameObject.hasFaceAt(pointer.x, pointer.y));
-        if (card) {
-          this.input.setDefaultCursor("pointer");
-        } else {
-          const objectsUnderPointer = this.input.hitTestPointer(pointer);
-          if (objectsUnderPointer.length > 0) {
-            const volumeIcon = objectsUnderPointer.find((obj) => obj.name === "volume-icon");
-            if (!volumeIcon) {
-              this.input.setDefaultCursor("pointer");
-            }
-          } else {
-            this.input.setDefaultCursor("default");
-          }
-        }
+    // Game Logic - Optimized pointer move handler
+    this.pointerMoveHandler = (pointer) => {
+      // Early exit if can't move
+      if (!this.canMove) {
+        return;
       }
-    });
-    this.input.on(Phaser.Input.Events.POINTER_DOWN, (pointer) => {
+
+      const card = this.cards.find((card) => card.gameObject.hasFaceAt(pointer.x, pointer.y));
+      if (card) {
+        this.input.setDefaultCursor("pointer");
+      } else {
+        const objectsUnderPointer = this.input.hitTestPointer(pointer);
+        const hasVolumeIcon = objectsUnderPointer.some((obj) => obj.name === "volume-icon");
+        this.input.setDefaultCursor(hasVolumeIcon ? "pointer" : "default");
+      }
+    };
+    this.input.on(Phaser.Input.Events.POINTER_MOVE, this.pointerMoveHandler);
+
+    this.pointerDownHandler = (pointer) => {
       if (this.canMove && this.cards.length) {
         const card = this.cards.find((card) => card.gameObject.hasFaceAt(pointer.x, pointer.y));
 
@@ -286,7 +318,7 @@ export class Play extends Phaser.Scene {
                 this.cameras.main.shake(600, 0.01);
                 // remove life and heart
                 const lastHeart = hearts[hearts.length - 1];
-                this.add.tween({
+                const heartRemoveTween = this.add.tween({
                   targets: lastHeart,
                   ease: Phaser.Math.Easing.Expo.InOut,
                   duration: 1000,
@@ -296,6 +328,7 @@ export class Play extends Phaser.Scene {
                     hearts.pop();
                   },
                 });
+                this.activeTweens.push(heartRemoveTween);
                 this.lives -= 1;
                 // Flip last card selected and flip the card opened from history and reset history
                 card.flip();
@@ -309,11 +342,12 @@ export class Play extends Phaser.Scene {
               if (this.lives === 0) {
                 // Show Game Over text
                 this.sound.play("whoosh", { volume: 1.3 });
-                this.add.tween({
+                const gameOverTween = this.add.tween({
                   targets: gameOverText,
                   ease: Phaser.Math.Easing.Bounce.Out,
                   y: this.sys.game.scale.height / 2,
                 });
+                this.activeTweens.push(gameOverTween);
 
                 this.canMove = false;
               }
@@ -323,11 +357,12 @@ export class Play extends Phaser.Scene {
                 this.sound.play("whoosh", { volume: 1.3 });
                 this.sound.play("victory");
 
-                this.add.tween({
+                const winnerTween = this.add.tween({
                   targets: winnerText,
                   ease: Phaser.Math.Easing.Bounce.Out,
                   y: this.sys.game.scale.height / 2,
                 });
+                this.activeTweens.push(winnerTween);
                 this.canMove = false;
               }
             });
@@ -340,7 +375,8 @@ export class Play extends Phaser.Scene {
           }
         }
       }
-    });
+    };
+    this.input.on(Phaser.Input.Events.POINTER_DOWN, this.pointerDownHandler);
 
     // Text events
     winnerText.on(Phaser.Input.Events.POINTER_OVER, () => {
@@ -353,7 +389,7 @@ export class Play extends Phaser.Scene {
     });
     winnerText.on(Phaser.Input.Events.POINTER_DOWN, () => {
       this.sound.play("whoosh", { volume: 1.3 });
-      this.add.tween({
+      const winnerHideTween = this.add.tween({
         targets: winnerText,
         ease: Phaser.Math.Easing.Bounce.InOut,
         y: -1000,
@@ -361,6 +397,7 @@ export class Play extends Phaser.Scene {
           this.restartGame();
         },
       });
+      this.activeTweens.push(winnerHideTween);
     });
 
     gameOverText.on(Phaser.Input.Events.POINTER_OVER, () => {
@@ -374,7 +411,7 @@ export class Play extends Phaser.Scene {
     });
 
     gameOverText.on(Phaser.Input.Events.POINTER_DOWN, () => {
-      this.add.tween({
+      const gameOverHideTween = this.add.tween({
         targets: gameOverText,
         ease: Phaser.Math.Easing.Bounce.InOut,
         y: -1000,
@@ -382,6 +419,7 @@ export class Play extends Phaser.Scene {
           this.restartGame();
         },
       });
+      this.activeTweens.push(gameOverHideTween);
     });
   }
 }

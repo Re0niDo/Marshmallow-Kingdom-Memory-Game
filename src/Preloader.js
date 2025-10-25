@@ -8,6 +8,11 @@ export class Preloader extends Phaser.Scene {
   }
 
   preload() {
+    // Add error handling for failed loads
+    this.load.on("loaderror", (file) => {
+      console.error("Error loading file:", file.key, file.src);
+    });
+
     this.load.setPath("assets/");
 
     this.load.image("volume-icon-on", "ui/volume-icon-on.png");
@@ -34,5 +39,12 @@ export class Preloader extends Phaser.Scene {
 
   create() {
     this.scene.start("Play");
+  }
+
+  shutdown() {
+    // Clean up loader event listeners
+    if (this.load) {
+      this.load.removeAllListeners();
+    }
   }
 }

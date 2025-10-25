@@ -4,6 +4,7 @@
 export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
   let isFlipping = false;
   const rotation = { y: 0 };
+  const activeTweens = []; // Track all tweens for cleanup
 
   const backTexture = "card-back";
 
@@ -16,7 +17,7 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
     if (isFlipping) {
       return;
     }
-    scene.add.tween({
+    const rotationTween = scene.add.tween({
       targets: [rotation],
       y: rotation.y === 180 ? 0 : 180,
       ease: Phaser.Math.Easing.Expo.Out,
@@ -24,7 +25,7 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
       onStart: () => {
         isFlipping = true;
         scene.sound.play("card-flip");
-        scene.tweens.chain({
+        const scaleTween = scene.tweens.chain({
           targets: card,
           ease: Phaser.Math.Easing.Expo.InOut,
           tweens: [
@@ -38,9 +39,13 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
             },
           ],
         });
+        activeTweens.push(scaleTween);
       },
       onUpdate: () => {
-        // card.modelRotation.y = Phaser.Math.DegToRad(180) + Phaser.Math.DegToRad(rotation.y);
+        // Check if card still exists before updating
+        if (!card || !card.scene) {
+          return;
+        }
         card.rotateY = 180 + rotation.y;
         const cardRotation = Math.floor(card.rotateY) % 360;
         if ((cardRotation >= 0 && cardRotation <= 90) || (cardRotation >= 270 && cardRotation <= 359)) {
@@ -56,18 +61,35 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
         }
       },
     });
+    activeTweens.push(rotationTween);
   };
 
   const destroy = () => {
-    scene.add.tween({
+    // Stop all active tweens before destroying
+    activeTweens.forEach((tween) => {
+      if (tween && !tween.isDestroyed()) {
+        tween.stop();
+      }
+    });
+    activeTweens.length = 0;
+
+    // Check if card still exists
+    if (!card || !card.scene) {
+      return;
+    }
+
+    const destroyTween = scene.add.tween({
       targets: [card],
       y: card.y - 1000,
       easing: Phaser.Math.Easing.Elastic.In,
       duration: 500,
       onComplete: () => {
-        card.destroy();
+        if (card && card.scene) {
+          card.destroy();
+        }
       },
     });
+    activeTweens.push(destroyTween);
   };
 
   return {
