@@ -3,6 +3,9 @@ import Phaser from "phaser";
 import { COLORS } from "./constants/colors";
 import { TEXTS } from "./constants/texts";
 
+// Debug mode - set to true to enable debug shortcuts
+const DEBUG_MODE = false;
+
 /**
  * Card Memory Game by Francisco Pereira (Gammafp)
  * -----------------------------------------------
@@ -257,6 +260,19 @@ export class Play extends Phaser.Scene {
     // Create a grid of cards
     this.cards = this.createGridCards();
 
+    // Debug mode shortcuts
+    if (DEBUG_MODE) {
+      this.input.keyboard.on("keydown-W", () => {
+        console.log("DEBUG: Instant Win triggered");
+        this.triggerWin(winnerText);
+      });
+
+      this.input.keyboard.on("keydown-L", () => {
+        console.log("DEBUG: Instant Lose triggered");
+        this.triggerLose(gameOverText, hearts);
+      });
+    }
+
     // Start canMove
     this.time.addEvent({
       delay: 200 * this.cards.length,
@@ -423,5 +439,49 @@ export class Play extends Phaser.Scene {
       });
       this.activeTweens.push(gameOverHideTween);
     });
+  }
+
+  // Debug helper methods
+  triggerWin(winnerText) {
+    // Clear all cards instantly
+    this.cards.forEach((card) => {
+      if (card.gameObject && card.gameObject.scene) {
+        card.gameObject.destroy();
+      }
+    });
+    this.cards = [];
+
+    // Show winner text
+    this.sound.play("whoosh", { volume: 1.3 });
+    this.sound.play("victory");
+
+    const winnerTween = this.add.tween({
+      targets: winnerText,
+      ease: Phaser.Math.Easing.Bounce.Out,
+      y: this.sys.game.scale.height / 2,
+    });
+    this.activeTweens.push(winnerTween);
+    this.canMove = false;
+  }
+
+  triggerLose(gameOverText, hearts) {
+    // Remove all hearts instantly
+    hearts.forEach((heart) => {
+      if (heart && heart.scene) {
+        heart.destroy();
+      }
+    });
+    hearts.length = 0;
+    this.lives = 0;
+
+    // Show game over text
+    this.sound.play("whoosh", { volume: 1.3 });
+    const gameOverTween = this.add.tween({
+      targets: gameOverText,
+      ease: Phaser.Math.Easing.Bounce.Out,
+      y: this.sys.game.scale.height / 2,
+    });
+    this.activeTweens.push(gameOverTween);
+    this.canMove = false;
   }
 }
