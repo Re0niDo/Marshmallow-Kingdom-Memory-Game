@@ -1,7 +1,7 @@
 import { Preloader } from "./Preloader";
 import { Play } from "./Play";
 import Phaser from "phaser";
-import { COLORS } from "./colors";
+import { COLORS } from "./constants/colors";
 
 const config = {
   title: "Marshmallow Kingdom Memory Game",

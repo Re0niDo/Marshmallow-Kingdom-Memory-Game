@@ -1,6 +1,7 @@
 import { createCard } from "./createCard";
 import Phaser from "phaser";
-import { COLORS } from "./colors";
+import { COLORS } from "./constants/colors";
+import { TEXTS } from "./constants/texts";
 
 /**
  * Card Memory Game by Francisco Pereira (Gammafp)
@@ -96,12 +97,13 @@ export class Play extends Phaser.Scene {
     this.add.image(0, 0, "background").setOrigin(0);
 
     const titleText = this.add
-      .text(
-        this.sys.game.scale.width / 2,
-        this.sys.game.scale.height / 2,
-        "Marshmallow Kingdom\nMemory Game\nClick to Play",
-        { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: COLORS.TITLE_TEXT }
-      )
+      .text(this.sys.game.scale.width / 2, this.sys.game.scale.height / 2, TEXTS.TITLE, {
+        align: "center",
+        strokeThickness: 4,
+        fontSize: 40,
+        fontStyle: "bold",
+        color: COLORS.TITLE_TEXT,
+      })
       .setOrigin(0.5)
       .setDepth(3)
       .setInteractive();
@@ -225,7 +227,7 @@ export class Play extends Phaser.Scene {
   startGame() {
     // WinnerText and GameOverText
     const winnerText = this.add
-      .text(this.sys.game.scale.width / 2, -1000, "YOU WIN", {
+      .text(this.sys.game.scale.width / 2, -1000, TEXTS.YOU_WIN, {
         align: "center",
         strokeThickness: 4,
         fontSize: 40,
@@ -237,7 +239,7 @@ export class Play extends Phaser.Scene {
       .setInteractive();
 
     const gameOverText = this.add
-      .text(this.sys.game.scale.width / 2, -1000, "GAME OVER\nClick to restart", {
+      .text(this.sys.game.scale.width / 2, -1000, TEXTS.GAME_OVER, {
         align: "center",
         strokeThickness: 4,
         fontSize: 40,
