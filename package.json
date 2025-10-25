@@ -1,6 +1,7 @@
 {
-  "name": "card-memory",
+  "name": "marshmallow-kingdom-memory-game",
   "version": "0.0.0",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -8,9 +9,18 @@
     "preview": "vite preview"
   },
   "devDependencies": {
+    "prettier": "^3.6.2",
     "vite": "^5.2.0"
   },
   "dependencies": {
     "phaser": "^3.80.1"
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "printWidth": 120,
+    "semi": true,
+    "singleQuote": false,
+    "tabWidth": 2,
+    "trailingComma": "es5"
   }
 }
