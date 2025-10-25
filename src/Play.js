@@ -364,12 +364,12 @@ export class Play extends Phaser.Scene {
     });
 
     gameOverText.on(Phaser.Input.Events.POINTER_OVER, () => {
-      gameOverText.setColor(COLORS.GAME_OVER_TEXT);
+      gameOverText.setColor(COLORS.GAME_OVER_TEXT_HOVER);
       this.input.setDefaultCursor("pointer");
     });
 
     gameOverText.on(Phaser.Input.Events.POINTER_OUT, () => {
-      gameOverText.setColor(COLORS.GAME_OVER_TEXT_HOVER);
+      gameOverText.setColor(COLORS.GAME_OVER_TEXT);
       this.input.setDefaultCursor("default");
     });
 
