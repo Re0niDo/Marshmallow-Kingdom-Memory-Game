@@ -8,7 +8,7 @@ const config = {
     width: 549,
     height: 480,
     parent: 'game-container',
-    backgroundColor: '#192a56',
+    backgroundColor: '#8256BF',
     pixelArt: true,
     scale: {
         mode: Phaser.Scale.FIT,

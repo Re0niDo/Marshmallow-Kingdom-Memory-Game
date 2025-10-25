@@ -55,10 +55,10 @@ export class Play extends Phaser.Scene
     create ()
     {
         // Background image
-        this.add.image(this.gridConfiguration.x - 63, this.gridConfiguration.y - 77, "background").setOrigin(0);
+        this.add.image(0, 0, "background").setOrigin(0);
 
         const titleText = this.add.text(this.sys.game.scale.width / 2, this.sys.game.scale.height / 2,
-            "Memory Card Game\nClick to Play",
+            "Marshmallow Kingdom\nMemory Game\nClick to Play",
             { align: "center", strokeThickness: 4, fontSize: 40, fontStyle: "bold", color: "#8c7ae6" }
         )
             .setOrigin(.5)
@@ -153,8 +153,7 @@ export class Play extends Phaser.Scene
     createHearts ()
     {
         return Array.from(new Array(this.lives)).map((el, index) => {
-            const heart = this.add.image(this.sys.game.scale.width + 1000, 20, "heart")
-                .setScale(2)
+            const heart = this.add.image(this.sys.game.scale.width + 1000, 20, "heart");
 
             this.add.tween({
                 targets: heart,
@@ -170,7 +169,7 @@ export class Play extends Phaser.Scene
 
     volumeButton ()
     {
-        const volumeIcon = this.add.image(25, 25, "volume-icon").setName("volume-icon");
+        const volumeIcon = this.add.image(532, 350, "volume-icon").setName("volume-icon").setDepth(1);
         volumeIcon.setInteractive();
 
         // Mouse enter
