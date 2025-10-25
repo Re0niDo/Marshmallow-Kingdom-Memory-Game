@@ -173,7 +173,6 @@ export class Play extends Phaser.Scene {
     });
     // Mouse leave
     volumeIcon.on(Phaser.Input.Events.POINTER_OUT, () => {
-      console.log("Mouse leave");
       this.input.setDefaultCursor("default");
     });
 
@@ -238,8 +237,10 @@ export class Play extends Phaser.Scene {
         if (card) {
           this.input.setDefaultCursor("pointer");
         } else {
-          if (go[0]) {
-            if (go[0].name !== "volume-icon-on") {
+          const objectsUnderPointer = this.input.hitTestPointer(pointer);
+          if (objectsUnderPointer.length > 0) {
+            const volumeIcon = objectsUnderPointer.find((obj) => obj.name === "volume-icon");
+            if (!volumeIcon) {
               this.input.setDefaultCursor("pointer");
             }
           } else {

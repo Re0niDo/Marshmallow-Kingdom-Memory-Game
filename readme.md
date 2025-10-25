@@ -1,6 +1,6 @@
 # Marshmallow Kingdom Memory Game
 
-Based on [Memory Card Game demo from Phaser 3](https://phaser.io/examples/v3.85.0/games/view/card-memory).
+Based on [Memory Card Game demo from Phaser 3](https://phaser.io/examples/v3.85.0/games/view/card-memory). The original author of the game is [Francisco Pereira (Gammafp)](https://gammafp.com/).
 
 Click on a card to reveal its symbol. Click on a second card to reveal its symbol. If the symbols match, the cards will remain face up. If the symbols do not match, the cards will be hidden again. Continue until all cards are matched.
 
@@ -17,7 +17,6 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
 
 ## TODO
 
-- [ ] Fix "go" variable
 - [ ] Update sound: card-flip.mp3
 - [ ] Update sound: card-match.mp3
 - [ ] Update sound: card-mismatch.mp3
@@ -26,3 +25,4 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
 - [ ] Update sound: victory.mp3
 - [ ] Update sound: whoosh.mp3
 - [ ] Optimize images
+- [ ] Update comment in `Play.js`
