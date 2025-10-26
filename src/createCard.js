@@ -1,16 +1,22 @@
 /**
- * Create a card game object
+ * Create an interactive flip card for the memory game
+ * @param {Phaser.Scene} scene - The Phaser scene instance
+ * @param {number} x - X position
+ * @param {number} y - Y position
+ * @param {string} frontTexture - Texture key for card front
+ * @param {string} cardName - Unique identifier for matching pairs
+ * @returns {Object} Card object with flip, destroy methods and gameObject reference
  */
 export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
   let isFlipping = false;
   const rotation = { y: 0 };
-  const activeTweens = []; // Track all tweens for cleanup
+  const activeTweens = [];
 
   const backTexture = "card-back";
 
   const card = scene.add.plane(x, y, backTexture).setName(cardName).setInteractive();
 
-  // start with the card face down
+  // Start with the card face down
   card.modelRotationY = 180;
 
   const flipCard = (callbackComplete) => {
@@ -25,6 +31,8 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
       onStart: () => {
         isFlipping = true;
         scene.sound.play("card-flip");
+
+        // Scale bounce effect
         const scaleTween = scene.tweens.chain({
           targets: card,
           ease: Phaser.Math.Easing.Expo.InOut,
@@ -42,12 +50,15 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
         activeTweens.push(scaleTween);
       },
       onUpdate: () => {
-        // Check if card still exists before updating
         if (!card || !card.scene) {
           return;
         }
+
+        // Update 3D rotation
         card.rotateY = 180 + rotation.y;
         const cardRotation = Math.floor(card.rotateY) % 360;
+
+        // Switch texture at 90° rotation point
         if ((cardRotation >= 0 && cardRotation <= 90) || (cardRotation >= 270 && cardRotation <= 359)) {
           card.setTexture(frontTexture);
         } else {
@@ -65,7 +76,7 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
   };
 
   const destroy = () => {
-    // Stop all active tweens before destroying
+    // Stop active tweens
     activeTweens.forEach((tween) => {
       if (tween && !tween.isDestroyed()) {
         tween.stop();
@@ -73,7 +84,6 @@ export const createCard = ({ scene, x, y, frontTexture, cardName }) => {
     });
     activeTweens.length = 0;
 
-    // Check if card still exists
     if (!card || !card.scene) {
       return;
     }

@@ -1,3 +1,7 @@
+/**
+ * Marshmallow Kingdom Memory Game
+ * Main entry point - initializes Phaser game engine
+ */
 import { Preloader } from "./Preloader";
 import { Play } from "./Play";
 import Phaser from "phaser";

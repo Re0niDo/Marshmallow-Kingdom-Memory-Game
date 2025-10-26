@@ -3,33 +3,30 @@ import Phaser from "phaser";
 import { COLORS } from "./constants/colors";
 import { TEXTS } from "./constants/texts";
 
-// Debug mode - set to true to enable debug shortcuts
+// Debug mode for testing win/lose scenarios (W/L keys)
 const DEBUG_MODE = false;
 
 /**
- * Card Memory Game by Francisco Pereira (Gammafp)
- * -----------------------------------------------
- *
- * Test your memory skills in this classic game of matching pairs.
- * Flip over cards to reveal pictures, and try to remember where each image is located.
- * Match all the pairs to win!
+ * Main game scene for the memory card matching game.
+ * Manages game state, card grid, lives, and win/lose conditions.
  */
 export class Play extends Phaser.Scene {
-  // All cards names
+  // Available card types
   cardNames = ["card-0", "card-1", "card-2", "card-3", "card-4", "card-5"];
-  // Cards Game Objects
+
+  // Active card instances
   cards = [];
 
-  // History of card opened
+  // Currently flipped card awaiting a match
   cardOpened = undefined;
 
-  // Can play the game
+  // Input is enabled when true
   canMove = false;
 
-  // Game variables
+  // Remaining attempts
   lives = 0;
 
-  // Grid configuration
+  // Card layout settings
   gridConfiguration = {
     x: 113,
     y: 102,
@@ -48,14 +45,13 @@ export class Play extends Phaser.Scene {
   }
 
   init() {
-    // Fadein camera
     this.cameras.main.fadeIn(500);
     this.lives = 10;
     this.volumeButton();
   }
 
   shutdown() {
-    // Remove input event listeners
+    // Clean up event listeners
     if (this.pointerMoveHandler) {
       this.input.off(Phaser.Input.Events.POINTER_MOVE, this.pointerMoveHandler);
       this.pointerMoveHandler = null;
@@ -73,25 +69,21 @@ export class Play extends Phaser.Scene {
     });
     this.activeTweens = [];
 
-    // Note: theme-song is NOT stopped here - it persists across scene restarts
-    // This allows the music to continue playing when the game restarts
-
     // Reset cursor
     this.input.setDefaultCursor("default");
 
-    // Remove shutdown listeners
+    // Clean up shutdown handlers
     this.events.off("shutdown", this.shutdown, this);
     this.events.off("destroy", this.shutdown, this);
   }
 
   create() {
-    // Register shutdown handlers for proper cleanup
     this.events.once("shutdown", this.shutdown, this);
     this.events.once("destroy", this.shutdown, this);
 
-    // Background image
     this.add.image(0, 0, "background").setOrigin(0);
 
+    // Create title with blinking effect
     const titleText = this.add
       .text(this.sys.game.scale.width / 2, this.sys.game.scale.height / 2, TEXTS.TITLE, {
         align: "center",
@@ -103,7 +95,8 @@ export class Play extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(3)
       .setInteractive();
-    // title tween like retro arcade
+
+    // Retro arcade blinking effect
     const titleTween = this.add.tween({
       targets: titleText,
       duration: 800,
@@ -114,7 +107,7 @@ export class Play extends Phaser.Scene {
     });
     this.activeTweens.push(titleTween);
 
-    // Text Events
+    // Title hover effects
     titleText.on(Phaser.Input.Events.POINTER_OVER, () => {
       titleText.setColor(COLORS.TITLE_TEXT_HOVER);
       this.input.setDefaultCursor("pointer");
@@ -123,6 +116,8 @@ export class Play extends Phaser.Scene {
       titleText.setColor(COLORS.TITLE_TEXT);
       this.input.setDefaultCursor("default");
     });
+
+    // Start game on click
     titleText.on(Phaser.Input.Events.POINTER_DOWN, () => {
       this.sound.play("whoosh", { volume: 1.3 });
       const startTween = this.add.tween({
@@ -145,7 +140,6 @@ export class Play extends Phaser.Scene {
     this.canMove = false;
     this.cameras.main.fadeOut(200 * this.cards.length);
 
-    // Let scene lifecycle handle cleanup
     this.time.addEvent({
       delay: 200 * this.cards.length,
       callback: () => {
@@ -155,7 +149,6 @@ export class Play extends Phaser.Scene {
   }
 
   createGridCards() {
-    // Phaser random array position
     const gridCardNames = Phaser.Utils.Array.Shuffle([...this.cardNames, ...this.cardNames]);
 
     return gridCardNames.map((name, index) => {
@@ -178,6 +171,9 @@ export class Play extends Phaser.Scene {
     });
   }
 
+  /**
+   * Create heart icons representing remaining lives
+   */
   createHearts() {
     return Array.from(new Array(this.lives)).map((el, index) => {
       const heart = this.add.image(this.sys.game.scale.width + 1000, 20, "heart");
@@ -194,15 +190,17 @@ export class Play extends Phaser.Scene {
     });
   }
 
+  /**
+   * Create and configure volume toggle button
+   */
   volumeButton() {
     const volumeIcon = this.add.image(532, 350, "volume-icon-on").setName("volume-icon").setDepth(1);
     volumeIcon.setInteractive();
 
-    // Mouse enter
     volumeIcon.on(Phaser.Input.Events.POINTER_OVER, () => {
       this.input.setDefaultCursor("pointer");
     });
-    // Mouse leave
+
     volumeIcon.on(Phaser.Input.Events.POINTER_OUT, () => {
       this.input.setDefaultCursor("default");
     });
@@ -221,7 +219,7 @@ export class Play extends Phaser.Scene {
   }
 
   startGame() {
-    // WinnerText and GameOverText
+    // Create win and game over text elements
     const winnerText = this.add
       .text(this.sys.game.scale.width / 2, -1000, TEXTS.YOU_WIN, {
         align: "center",
@@ -247,13 +245,10 @@ export class Play extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive();
 
-    // Start lifes images
     const hearts = this.createHearts();
-
-    // Create a grid of cards
     this.cards = this.createGridCards();
 
-    // Debug mode shortcuts
+    // Debug shortcuts (W = win, L = lose)
     if (DEBUG_MODE) {
       this.input.keyboard.on("keydown-W", () => {
         console.log("DEBUG: Instant Win triggered");
@@ -266,7 +261,7 @@ export class Play extends Phaser.Scene {
       });
     }
 
-    // Start canMove
+    // Enable input after cards finish animating
     this.time.addEvent({
       delay: 200 * this.cards.length,
       callback: () => {
@@ -274,9 +269,8 @@ export class Play extends Phaser.Scene {
       },
     });
 
-    // Game Logic - Optimized pointer move handler
+    // Update cursor on hover
     this.pointerMoveHandler = (pointer) => {
-      // Early exit if can't move
       if (!this.canMove) {
         return;
       }
@@ -292,6 +286,7 @@ export class Play extends Phaser.Scene {
     };
     this.input.on(Phaser.Input.Events.POINTER_MOVE, this.pointerMoveHandler);
 
+    // Handle card clicks and matching logic
     this.pointerDownHandler = (pointer) => {
       if (this.canMove && this.cards.length) {
         const card = this.cards.find((card) => card.gameObject.hasFaceAt(pointer.x, pointer.y));
@@ -299,9 +294,8 @@ export class Play extends Phaser.Scene {
         if (card) {
           this.canMove = false;
 
-          // Detect if there is a card opened
           if (this.cardOpened !== undefined) {
-            // If the card is the same that the opened not do anything
+            // Prevent clicking the same card twice
             if (
               this.cardOpened.gameObject.x === card.gameObject.x &&
               this.cardOpened.gameObject.y === card.gameObject.y
@@ -312,22 +306,21 @@ export class Play extends Phaser.Scene {
 
             card.flip(() => {
               if (this.cardOpened.cardName === card.cardName) {
-                // ------- Match -------
+                // Cards match
                 this.sound.play("card-match");
-                // Destroy card selected and card opened from history
+
                 this.cardOpened.destroy();
                 card.destroy();
 
-                // remove card destroyed from array
                 this.cards = this.cards.filter((cardLocal) => cardLocal.cardName !== card.cardName);
-                // reset history card opened
                 this.cardOpened = undefined;
                 this.canMove = true;
               } else {
-                // ------- No match -------
+                // Cards don't match
                 this.sound.play("card-mismatch");
                 this.cameras.main.shake(600, 0.01);
-                // remove life and heart
+
+                // Remove a life
                 const lastHeart = hearts[hearts.length - 1];
                 const heartRemoveTween = this.add.tween({
                   targets: lastHeart,
@@ -341,7 +334,8 @@ export class Play extends Phaser.Scene {
                 });
                 this.activeTweens.push(heartRemoveTween);
                 this.lives -= 1;
-                // Flip last card selected and flip the card opened from history and reset history
+
+                // Flip both cards back
                 card.flip();
                 this.cardOpened.flip(() => {
                   this.cardOpened = undefined;
@@ -349,9 +343,8 @@ export class Play extends Phaser.Scene {
                 });
               }
 
-              // Check if the game is over
+              // Check for game over
               if (this.lives === 0) {
-                // Show Game Over text
                 this.sound.play("whoosh", { volume: 1.3 });
                 const gameOverTween = this.add.tween({
                   targets: gameOverText,
@@ -363,7 +356,7 @@ export class Play extends Phaser.Scene {
                 this.canMove = false;
               }
 
-              // Check if the game is won
+              // Check for win
               if (this.cards.length === 0) {
                 this.sound.play("whoosh", { volume: 1.3 });
                 this.sound.play("victory");
@@ -378,7 +371,7 @@ export class Play extends Phaser.Scene {
               }
             });
           } else if (this.cardOpened === undefined && this.lives > 0 && this.cards.length > 0) {
-            // If there is not a card opened save the card selected
+            // First card flipped
             card.flip(() => {
               this.canMove = true;
             });
@@ -389,7 +382,7 @@ export class Play extends Phaser.Scene {
     };
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.pointerDownHandler);
 
-    // Text events
+    // Winner text interactions
     winnerText.on(Phaser.Input.Events.POINTER_OVER, () => {
       winnerText.setColor(COLORS.WINNER_TEXT_HOVER);
       this.input.setDefaultCursor("pointer");
@@ -411,6 +404,7 @@ export class Play extends Phaser.Scene {
       this.activeTweens.push(winnerHideTween);
     });
 
+    // Game over text interactions
     gameOverText.on(Phaser.Input.Events.POINTER_OVER, () => {
       gameOverText.setColor(COLORS.GAME_OVER_TEXT_HOVER);
       this.input.setDefaultCursor("pointer");
@@ -434,9 +428,11 @@ export class Play extends Phaser.Scene {
     });
   }
 
-  // Debug helper methods
+  /**
+   * Debug helper to instantly trigger win condition
+   */
   triggerWin(winnerText) {
-    // Clear all cards instantly
+    // Clear all cards
     this.cards.forEach((card) => {
       if (card.gameObject && card.gameObject.scene) {
         card.gameObject.destroy();
@@ -444,7 +440,6 @@ export class Play extends Phaser.Scene {
     });
     this.cards = [];
 
-    // Show winner text
     this.sound.play("whoosh", { volume: 1.3 });
     this.sound.play("victory");
 
@@ -457,8 +452,11 @@ export class Play extends Phaser.Scene {
     this.canMove = false;
   }
 
+  /**
+   * Debug helper to instantly trigger lose condition
+   */
   triggerLose(gameOverText, hearts) {
-    // Remove all hearts instantly
+    // Remove all hearts
     hearts.forEach((heart) => {
       if (heart && heart.scene) {
         heart.destroy();
@@ -467,7 +465,6 @@ export class Play extends Phaser.Scene {
     hearts.length = 0;
     this.lives = 0;
 
-    // Show game over text
     this.sound.play("whoosh", { volume: 1.3 });
     const gameOverTween = this.add.tween({
       targets: gameOverText,
