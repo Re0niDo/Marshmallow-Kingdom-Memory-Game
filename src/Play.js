@@ -119,14 +119,14 @@ export class Play extends Phaser.Scene {
 
     // Start game on click
     titleText.on(Phaser.Input.Events.POINTER_DOWN, () => {
-      this.sound.play("whoosh", { volume: 1.3 });
+      this.sound.play("whoosh", { volume: 1 });
       const startTween = this.add.tween({
         targets: titleText,
         ease: Phaser.Math.Easing.Bounce.InOut,
         y: -1000,
         onComplete: () => {
           if (!this.sound.get("theme-song")) {
-            this.sound.play("theme-song", { loop: true, volume: 0.5 });
+            this.sound.play("theme-song", { loop: true, volume: 0.3 });
           }
           this.startGame();
         },
@@ -163,7 +163,7 @@ export class Play extends Phaser.Scene {
         targets: newCard.gameObject,
         duration: 800,
         delay: index * 100,
-        onStart: () => this.sound.play("card-slide", { volume: 1.2 }),
+        onStart: () => this.sound.play("card-slide", { volume: 1, delay: 0.65 }),
         y: this.gridConfiguration.y + (128 + this.gridConfiguration.paddingY) * Math.floor(index / 4),
       });
       this.activeTweens.push(cardTween);
@@ -345,7 +345,7 @@ export class Play extends Phaser.Scene {
 
               // Check for game over
               if (this.lives === 0) {
-                this.sound.play("whoosh", { volume: 1.3 });
+                this.sound.play("whoosh", { volume: 1 });
                 const gameOverTween = this.add.tween({
                   targets: gameOverText,
                   ease: Phaser.Math.Easing.Bounce.Out,
@@ -358,7 +358,7 @@ export class Play extends Phaser.Scene {
 
               // Check for win
               if (this.cards.length === 0) {
-                this.sound.play("whoosh", { volume: 1.3 });
+                this.sound.play("whoosh", { volume: 1 });
                 this.sound.play("victory");
 
                 const winnerTween = this.add.tween({
@@ -392,7 +392,7 @@ export class Play extends Phaser.Scene {
       this.input.setDefaultCursor("default");
     });
     winnerText.on(Phaser.Input.Events.POINTER_DOWN, () => {
-      this.sound.play("whoosh", { volume: 1.3 });
+      this.sound.play("whoosh", { volume: 1 });
       const winnerHideTween = this.add.tween({
         targets: winnerText,
         ease: Phaser.Math.Easing.Bounce.InOut,
@@ -440,7 +440,7 @@ export class Play extends Phaser.Scene {
     });
     this.cards = [];
 
-    this.sound.play("whoosh", { volume: 1.3 });
+    this.sound.play("whoosh", { volume: 1 });
     this.sound.play("victory");
 
     const winnerTween = this.add.tween({
@@ -465,7 +465,7 @@ export class Play extends Phaser.Scene {
     hearts.length = 0;
     this.lives = 0;
 
-    this.sound.play("whoosh", { volume: 1.3 });
+    this.sound.play("whoosh", { volume: 1 });
     const gameOverTween = this.add.tween({
       targets: gameOverText,
       ease: Phaser.Math.Easing.Bounce.Out,
