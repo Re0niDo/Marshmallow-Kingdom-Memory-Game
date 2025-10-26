@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "optimize": "sharp --input \"public/assets/**/*.png\" --output \"{dir}/{name}{ext}\" --format png --compressionLevel 9 --optimize"
   },
   "devDependencies": {
     "prettier": "^3.6.2",
+    "sharp-cli": "^5.2.0",
     "vite": "^6.0.11"
   },
   "dependencies": {

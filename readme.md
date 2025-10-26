@@ -25,7 +25,6 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
 
 ## TODO
 
-- [ ] Optimize images
 - [ ] Enhance comments in `Play.js`
 - [ ] Find hosting
 - [ ] Host the game
