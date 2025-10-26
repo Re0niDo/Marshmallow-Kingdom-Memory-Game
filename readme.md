@@ -22,7 +22,3 @@ Click on a card to reveal its symbol. Click on a second card to reveal its symbo
   - `victory.mp3` taken from: Soundrangers - Audience Reactions (2018)
   - `whoosh.mp3` taken from: Matias Vidal Saavedra - Animated Explainer Video (2020)
 - Theme song: ["Pickled Pink" by Kevin MacLeod](https://freepd.com/upbeat.php)
-
-## TODO
-
-- [ ] Host the game
